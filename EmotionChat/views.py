@@ -39,11 +39,11 @@ def signup():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(mail=form.email.data).first()
         if not user:
-            return '<h1> User not found!</h1>'
+            flash('User not found!')
         if not user.check_password(form.password.data):
-            return '<h1> Wrong Password!</h1>'
+            flash('Wrong Password!')
         login_user(user, remember=form.remember.data)
         flash('You are now logged in')
         return redirect(url_for('chat'))
