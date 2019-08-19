@@ -4,7 +4,7 @@ from instance.config import Config
 from flask_apscheduler import APScheduler
 #from flask_migrate import Migrate
 from flask_login import LoginManager
-app = Flask(__name__)
+app = Flask(__name__,root_path='EmotionChat')
 
 #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@db'
 

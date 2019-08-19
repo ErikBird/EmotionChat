@@ -9,6 +9,6 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(30), unique=True)
     password = db.Column(db.String(128))
     def set_password(self, password):
-        self.password = generate_password_hash(password, method='sha256')
+        self.password = generate_password_hash(password)
     def check_password(self, password):
         return check_password_hash(self.password, password)
