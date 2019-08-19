@@ -1,19 +1,36 @@
 from run import app,db
 from flask import Flask,Response, url_for,request,render_template,redirect,flash,jsonify
 from flask_login import current_user, login_user,logout_user,login_required
-from run import login_manager
+from run import login_manager,socketio
 from EmotionChat.models import User
 from EmotionChat.forms import *
+from flask_socketio import send,emit
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+@socketio.on('connect', namespace='/chat')
+def on_connect(**kwargs):
+    print("Client connected %s" % request.sid)
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
+@socketio.on('massage', namespace='/chat')
+def handleMessage(msg):
+    print('Message: '+msg['data'])
+    send(msg,broadcast=True)
+
+
+#@socketio.on('my event')
+#def test_message(message):
+#    emit('my response', {'data': 'got it!'})
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

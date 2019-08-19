@@ -1,4 +1,3 @@
-pytz
 flask
 flask-cors
 Flask-WTF
@@ -6,6 +5,5 @@ flask-sqlalchemy
 flask-migrate
 pymysql
 cryptography
-moviepy
-Flask-APScheduler
 flask-login
+Flask-SocketIO ==  4.2.1

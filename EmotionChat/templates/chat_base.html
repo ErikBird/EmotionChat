@@ -3,12 +3,29 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Workhorse</title>
+    <title>Chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='bulma.min.css') }}">
     <script type=text/javascript src="{{ url_for('static', filename='fontawesome.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 
   </head>
   <body>
+
+  <script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+</script>
+
+  {% with messages = get_flashed_messages() %} {% if messages %}
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+  {% endif %} {% endwith %}
+
+
         {% block content %}{% endblock %}
 </body>
 </html>

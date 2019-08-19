@@ -1,12 +1,33 @@
 {% extends "chat_base.html" %}
-
 {% block content %}
 
-{% if session.logged_in %}
-asjldkjsaljdlsakj
-    <h3>{{session.username}}</h3>
-{% endif %}
+{{ current_user.username }}
 
 
+<script type="text/javascript">
+$(document).ready(function() {
+    namespace = '/chat';
+
+	var socket = io(namespace);
+	socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+
+	socket.on('message', function(msg) {
+		$("#messages").append('<li>'+msg.data+'</li>');
+		console.log('Received message');
+	});
+
+	$('#sendbutton').on('click', function() {
+		socket.emit('massage', {data: $('#myMessage').val()});
+	});
+});
+
+
+</script>
+
+<ul id="messages"></ul>
+<input type="text" id="myMessage">
+<button id="sendbutton">Send</button>
 
 {% endblock %}
