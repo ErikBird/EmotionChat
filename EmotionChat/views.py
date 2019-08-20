@@ -28,10 +28,6 @@ def handleMessage(msg):
     send(msg,broadcast=True)
 
 
-#@socketio.on('my event')
-#def test_message(message):
-#    emit('my response', {'data': 'got it!'})
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
 
