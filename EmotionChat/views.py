@@ -6,6 +6,7 @@ from EmotionChat.models import User
 from EmotionChat.forms import *
 from flask_socketio import send,emit
 
+active_user = {}
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -13,8 +14,33 @@ def load_user(user_id):
 
 
 @socketio.on('connect', namespace='/chat')
-def on_connect(**kwargs):
-    print("Client connected %s" % request.sid)
+def on_connect():
+    print('Connect: ', request.sid)
+    '''
+    if request.sid not in server_variables.keys():
+        server_variables[request.sid] = {'sid': request.sid, 'stats': 'connected'}
+        print("Client connected %s" % request.sid )
+        # to broadcaset to all but self
+        for k in server_variables.keys():
+            if k != request.sid:
+                emit('my response', {'data': 'This sid ' + str(request.sid) + ' just connected', 'stats': 'RUNNING'}, room=k)
+        # to send only to first socket that was connected to this server
+        #emit('my response', {'data': 'This sid ' + str(request.sid) + ' just connected', 'stats': 'RUNNING'},
+        #     room=server_variables[server_variables.keys()[0]]['sid'])
+    '''
+
+@socketio.on('userdata', namespace='/chat')
+def update_user(user):
+    active_user[user['data']]=request.sid
+    if user['data'] in active_user.values(): print('Error: Dublicated User!')
+    [print(user) for user in active_user.keys()]
+
+# route for socket disconnection
+@socketio.on('disconnect', namespace='/chat')
+def disconnect():
+    print(active_user[request.sid] + str(request.sid) + '=> Client Disconnected ')
+    del active_user[request.sid]
+
 
 
 @app.route('/')
@@ -23,9 +49,12 @@ def index():
 
 
 @socketio.on('massage', namespace='/chat')
-def handleMessage(msg):
-    print('Message: '+msg['data'])
-    send(msg,broadcast=True)
+def handle_message(payLoad):
+    recipient_session_id = active_user[payLoad['username']]
+    print('Message: '+payLoad['text'])
+    message = payLoad['text']
+    emit('new_message',message, room=recipient_session_id )
+    #send(payLoad,broadcast=True)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -59,13 +88,26 @@ def login():
             flash('Wrong Password!')
         login_user(user, remember=form.remember.data)
         flash('You are now logged in')
-        return redirect(url_for('chat'))
+        return redirect(url_for('index_chat'))
     return render_template('login.html', form=form)
 
-@app.route('/chat')
+@app.route('/chat/<username>', methods=['GET', 'POST'])
+def user_chat(username):
+    user = request.form.getlist('handles[]')
+    if not user:
+        user = active_user.keys()
+    print('names to display', user)
+    return render_template("chat.html", user = user , receiver=username)
+
+
+@app.route('/chat',)
 @login_required
-def chat():
-    return render_template('chat.html')
+def index_chat():
+    user = request.form.getlist('handles[]')
+    if not user:
+        user = active_user.keys()
+    print('names to display', user)
+    return render_template('chat.html', user = user)
 
 @app.route('/logout')
 @login_required

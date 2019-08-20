@@ -21,7 +21,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, manage_session=False) #Manage Session False to be able to access the Flask Sessions
 from EmotionChat.views import *
 
 if __name__ == "__main__":

@@ -8,16 +8,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='bulma.min.css') }}">
     <script type=text/javascript src="{{ url_for('static', filename='fontawesome.js') }}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-
   </head>
+  <style>
+       /* Style the buttons */
+        .btn {
+          border: none;
+          outline: none;
+          padding: 10px 16px;
+          background-color: #f1f1f1;
+          cursor: pointer;
+        }
+
+        /* Style the active class (and buttons on mouse-over) */
+        .active, .btn:hover {
+          background-color: #666;
+          color: white;
+        }
+  </style>
   <body>
 
-  <script type="text/javascript" charset="utf-8">
-    var socket = io();
-    socket.on('connect', function() {
-        socket.emit('my event', {data: 'I\'m connected!'});
-    });
-</script>
+ <div id="user_list">
+     {% for u in user %}
+        {% if u != current_user.username :%}
+            <a {% if u == receiver :%}class="btn active"{% else %}class="btn"{% endif %} label="{{ u }}" href="/chat/{{u}}">{{ u }}</a>
+            <br>
+        {% endif %}
+     {% endfor %}
+</div>
 
   {% with messages = get_flashed_messages() %} {% if messages %}
           {% for message in messages %}
@@ -25,6 +42,20 @@
           {% endfor %}
   {% endif %} {% endwith %}
 
+ <script>
+        var btnContainer = document.getElementById("user_list");
+
+        // Get all buttons with class="btn" inside the container
+        var btns = btnContainer.getElementsByClassName("btn");
+
+        // Loop through the buttons and add the active class to the current/clicked button
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function() {
+            var current = document.getElementsByClassName("active");
+            current[0].className = current[0].className.replace(" active", "");
+            this.className += " active";
+          });}
+ </script>
 
         {% block content %}{% endblock %}
 </body>
