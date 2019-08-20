@@ -22,18 +22,6 @@ def on_connect():
     :return:
     '''
     print('Connect: ', request.sid)
-    '''
-    if request.sid not in server_variables.keys():
-        server_variables[request.sid] = {'sid': request.sid, 'stats': 'connected'}
-        print("Client connected %s" % request.sid )
-        # to broadcaset to all but self
-        for k in server_variables.keys():
-            if k != request.sid:
-                emit('my response', {'data': 'This sid ' + str(request.sid) + ' just connected', 'stats': 'RUNNING'}, room=k)
-        # to send only to first socket that was connected to this server
-        #emit('my response', {'data': 'This sid ' + str(request.sid) + ' just connected', 'stats': 'RUNNING'},
-        #     room=server_variables[server_variables.keys()[0]]['sid'])
-    '''
 
 @socketio.on('userdata', namespace='/chat')
 def update_user(user):
@@ -116,7 +104,7 @@ def signup():
             db.session.commit()
             flash('Your account has beed created')
             login_user(new_user, remember=False)
-            return redirect(url_for('chat'))
+            return redirect(url_for('index_chat'))
     return render_template('signup.html', form=form)
 
 
@@ -158,6 +146,7 @@ def index_chat():
     user = request.form.getlist('handles[]')
     if not user:
         user = active_user.keys()
+    print('Active User:',len(user))
     return render_template('chat_base.html', user = user)
 
 @app.route('/logout')
@@ -165,6 +154,7 @@ def index_chat():
 def logout():
     '''Logout a User'''
     logout_user()
+    disconnect()
     return 'You are now logged out!'
 
 @app.route('/about')

@@ -1,53 +1,20 @@
 {% extends "chat_base.html" %}
 {% block content %}
 
-
-
 <ul id="messages"></ul>
 <input type="text" id="myMessage">
 <button id="sendbutton">Send</button>
+<button id="videobutton">Video</button>
 
 
+<!--
 <script type="text/javascript">
-$(document).ready(function() {
-
-    namespace = '/chat';
-	var socket = io(namespace);
-	socket.on('connect', function() {
-        socket.emit('userdata', {data: '{{ current_user.username }}'});
-        console.log('Userdata send');
-    });
-
-	socket.on('new_message', function(msg) {
-        // Retrieve
-        $("#messages").append('<li>'+msg+'</li>');
-		console.log('Received message');
-	});
-
-	$('#sendbutton').on('click', function() {
-	    var interest = '{{receiver}}'
-	    console.log('Target:'+interest);
-	    var recipient = interest
-        var message_to_send = $('#myMessage').val()
-		socket.emit('massage', {username: recipient,text: message_to_send});
-	});
-
-    $(window).on("unload", function(e) {
-        var messeges = [];
-        // Store all messages in client storage
-        $("li").each(function() { messeges.push($(this).text()) });
-        console.log('Json:'+messegesJSON);
-        localStorage.setItem('{{receiver}}', JSON.stringify($("#messages")));
-    });
-});
-
 // Retrieve the messeges from storage
 var messegesJSON = localStorage.getItem('{{receiver}}');
 for (m in JSON.parse(messegesJSON)) {
     $("#messages").append('<li>'+m+'</li>');
 }
-
 </script>
-
+-->
 
 {% endblock %}

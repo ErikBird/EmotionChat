@@ -4,10 +4,6 @@
 Sign Up
 {% endblock %}
 
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
-{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -21,7 +17,7 @@ Sign Up
     {{ form.email }}
     Password:
     {{ form.password }}
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
+    <button class="button" type="submit">Sign Up</button>
   </form>
 
 </div> <!-- /container -->

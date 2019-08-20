@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chat</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('.static', filename='bulma.min.css') }}">
-    <script type=text/javascript src="{{ url_for('.static', filename='fontawesome.js') }}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
   </head>
   <style>
@@ -24,19 +22,81 @@
           background-color: #666;
           color: white;
         }
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Style the header */
+        header {
+          background-color: #666;
+          padding: 10px;
+          text-align: left;
+          font-size: 20px;
+          color: white;
+        }
+
+        /* Container for flexboxes */
+        section {
+          display: -webkit-flex;
+          display: flex;
+        }
+
+        /* Style the navigation menu */
+        nav {
+          -webkit-flex: 1;
+          -ms-flex: 1;
+          flex: 1;
+          line-height: 2.5;
+          background: #ccc;
+          padding: 20px;
+        }
+
+        /* Style the list inside the menu */
+        nav ul {
+          list-style-type: none;
+          padding: 0;
+        }
+
+        /* Style the content */
+        article {
+          -webkit-flex: 3;
+          -ms-flex: 3;
+          flex: 3;
+          background-color: #f1f1f1;
+          padding: 10px;
+        }
+
+        /* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
+        @media (max-width: 600px) {
+          section {
+            -webkit-flex-direction: column;
+            flex-direction: column;
+          }
+        }
+
   </style>
   <body>
-{{ current_user.username }}
-
- <div id="user_list">
+  <header>
+  <h2>{{ current_user.username }}</h2>
+</header>
+<section>
+<nav id="user_list">
+     <ul>
      {% for u in user %}
         {% if u != current_user.username :%}
-            <a {% if u == receiver :%}class="btn active"{% else %}class="btn"{% endif %} label="{{ u }}" href="/chat/{{u}}">{{ u }}</a>
-            <br>
+            <li><a {% if u == receiver :%}class="btn active"{% else %}class="btn"{% endif %} label="{{ u }}" href="/chat/{{u}}">{{ u }}</a></li>
         {% endif %}
      {% endfor %}
-</div>
-
+         <form action="{{url_for('logout')}}">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
+        </form>
+     </ul>
+</nav>
+<article>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
@@ -58,13 +118,41 @@
             current[0].className = current[0].className.replace(" active", "");
             this.className += " active";
           });}
+
+
+        $(document).ready(function() {
+            namespace = '/chat';
+            var socket = io(namespace);
+            socket.on('connect', function() {
+                socket.emit('userdata', {data: '{{ current_user.username }}'});
+                console.log('Userdata send');
+            });
+
+            socket.on('new_message', function(msg) {
+                // Retrieve
+                $("#messages").append('<li>'+msg+'</li>');
+                console.log('Received message');
+            });
+
+            $('#sendbutton').on('click', function() {
+                var interest = '{{receiver}}'
+                console.log('Target:'+interest);
+                var recipient = interest
+                var message_to_send = $('#myMessage').val()
+                socket.emit('massage', {username: recipient,text: message_to_send});
+            });
+
+            /*
+            //@TODO: No Entries in Storage. Read Method is in chat.html
+            $(window).on("unload", function(e) {
+                // Store all messages in client storage
+                localStorage.setItem('{{receiver}}', JSON.stringify($("#messages")));
+            });*/
+        });
  </script>
+    {% block content %}{% endblock %}
 
-        {% block content %}{% endblock %}
-
- <form action="{{url_for('logout')}}">
-     <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
- </form>
-
+</article>
+</section>
 </body>
 </html>
