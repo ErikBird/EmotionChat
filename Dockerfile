@@ -5,6 +5,7 @@ FROM python:3.6-alpine3.6
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONFAULTHANDLER 1
 
+
 RUN apk add --no-cache --virtual build-base && \
     apk add --no-cache ca-certificates mariadb-dev libffi-dev libjpeg freetype freetype-dev lcms2 lcms2-dev libjpeg-turbo libjpeg-turbo-dev zlib zlib-dev libwebp musl libgcc libgfortran libstdc++ gfortran openjpeg tiff lapack-dev openblas gettext && \
     python3 -m ensurepip && \
@@ -19,7 +20,7 @@ WORKDIR /code
 EXPOSE 5000
 
 RUN apk add --no-cache git
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 RUN apk del build-base
 
 CMD ["python3", "run.py"]

@@ -1,7 +1,11 @@
 {% extends "chat_base.html" %}
 {% block content %}
 
-{{ current_user.username }}
+
+
+<ul id="messages"></ul>
+<input type="text" id="myMessage">
+<button id="sendbutton">Send</button>
 
 
 <script type="text/javascript">
@@ -25,30 +29,25 @@ $(document).ready(function() {
 	    console.log('Target:'+interest);
 	    var recipient = interest
         var message_to_send = $('#myMessage').val()
-        $("#messages").append('<li>'+$('#myMessage').val()+'</li>');
 		socket.emit('massage', {username: recipient,text: message_to_send});
 	});
 
     $(window).on("unload", function(e) {
         var messeges = [];
         // Store all messages in client storage
-        $("ul li").each(function() { messeges.push($(this).text()) });
-        localStorage.setItem('{{receiver}}', JSON.stringify(messeges));
+        $("li").each(function() { messeges.push($(this).text()) });
+        console.log('Json:'+messegesJSON);
+        localStorage.setItem('{{receiver}}', JSON.stringify($("#messages")));
     });
 });
 
-</script>
-
-<ul id="messages"></ul>
-<input type="text" id="myMessage">
-<button id="sendbutton">Send</button>
-
-<script type="text/javascript">
 // Retrieve the messeges from storage
 var messegesJSON = localStorage.getItem('{{receiver}}');
-for (m in JSON.parse(messegesJSON)):{
+for (m in JSON.parse(messegesJSON)) {
     $("#messages").append('<li>'+m+'</li>');
 }
+
 </script>
+
 
 {% endblock %}

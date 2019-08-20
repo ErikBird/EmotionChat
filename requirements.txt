@@ -7,3 +7,5 @@ pymysql
 cryptography
 flask-login
 Flask-SocketIO ==  4.2.1
+flask_session
+nltk
