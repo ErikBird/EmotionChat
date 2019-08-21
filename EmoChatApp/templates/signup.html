@@ -8,13 +8,13 @@ Sign Up
 {% block content %}
 <div class="container">
 
-  <form class="form-signin" method="POST" action="/signup">
-    <h2 class="form-signin-heading">Sign Up</h2>
+  <form class="form" method="POST" action="/signup">
+    <h2>Sign Up</h2>
     {{ form.hidden_tag() }}
     Username:
     {{ form.username }}
     Mail:
-    {{ form.email }}
+    {{ form.email }}<br>
     Password:
     {{ form.password }}
     <button class="button" type="submit">Sign Up</button>

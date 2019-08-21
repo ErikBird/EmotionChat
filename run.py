@@ -6,7 +6,10 @@ from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_session import Session
 import nltk
-app = Flask(__name__,root_path='EmotionChat')
+import os
+
+STATIC_DIR = os.path.abspath('./EmoChatApp/static')
+app = Flask(__name__,root_path='EmoChatApp' , static_folder=STATIC_DIR)
 app.config['SESSION_TYPE'] = 'filesystem'
 
 db = SQLAlchemy(app)
@@ -32,11 +35,7 @@ sentiment_model = SentimentIntensityAnalyzer()
 
 
 
-from EmotionChat.views import *
+from EmoChatApp.views import *
 
 if __name__ == "__main__":
-
     socketio.run(app ,host ="0.0.0.0", port ='5000')
-
-    #app.run(host="0.0.0.0", use_reloader=False)
-

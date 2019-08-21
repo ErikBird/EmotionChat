@@ -1,11 +1,12 @@
 from run import app,db
-from flask import Flask,Response, url_for,request,render_template,redirect,flash,jsonify
+from flask import Flask,Response, url_for,request,render_template,redirect,flash,jsonify,send_from_directory
 from flask_login import current_user, login_user,logout_user,login_required
 from run import login_manager,socketio,sentiment_model
-from EmotionChat.models import User
-from EmotionChat.forms import *
+from EmoChatApp.models import User
+from EmoChatApp.forms import *
 from flask_socketio import send,emit
 import operator
+
 
 active_user = {} #Dict keeps track of all available user for Socket IO
 
@@ -22,6 +23,7 @@ def on_connect():
     :return:
     '''
     print('Connect: ', request.sid)
+
 
 @socketio.on('userdata', namespace='/chat')
 def update_user(user):
@@ -48,7 +50,6 @@ def disconnect():
     print( str(request.sid) + '=> Client Disconnected ')
 
 
-
 @app.route('/')
 def index():
     '''
@@ -67,7 +68,6 @@ def handle_message(payLoad):
     :return:
     '''
     recipient_session_id = active_user[payLoad['username']][0]
-    print('Message: '+payLoad['text'])
     message = payLoad['text']
 
     emoji_mapping = {
@@ -128,6 +128,7 @@ def login():
 
 
 @app.route('/chat/<username>', methods=['GET', 'POST'])
+@login_required
 def user_chat(username):
     '''
 
@@ -146,7 +147,6 @@ def index_chat():
     user = request.form.getlist('handles[]')
     if not user:
         user = active_user.keys()
-    print('Active User:',len(user))
     return render_template('chat_base.html', user = user)
 
 @app.route('/logout')
@@ -154,7 +154,6 @@ def index_chat():
 def logout():
     '''Logout a User'''
     logout_user()
-    disconnect()
     return 'You are now logged out!'
 
 @app.route('/about')
